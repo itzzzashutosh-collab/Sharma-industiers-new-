@@ -1,0 +1,6 @@
+{
+  "name": "Swatch Paints ERP",
+  "description": "Executive Management & Operations ERP Dashboard for Swatch Paints manufacturing, sales, distribution, and CRM.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
