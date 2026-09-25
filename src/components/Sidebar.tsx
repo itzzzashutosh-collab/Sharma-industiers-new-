@@ -26,6 +26,8 @@ interface SidebarProps {
   onSelectFinanceSubItem?: (subItem: string) => void;
   activeMarketingSubItem?: string;
   onSelectMarketingSubItem?: (subItem: string) => void;
+  activeBrandingSubItem?: string;
+  onSelectBrandingSubItem?: (subItem: string) => void;
 }
 
 interface NavItem {
@@ -34,6 +36,17 @@ interface NavItem {
   icon: string;
   badge?: string;
 }
+
+export const BRANDING_SUB_ITEMS = [
+  'Brand Overview',
+  'Packaging Designs & SKUs',
+  'Brand Asset Library',
+  'Color Palette & Shade System',
+  'Brand Guidelines & Manual',
+  'Marketing Creatives & Collateral',
+  'Dealer Signage & POSM Specs',
+  'Brand Compliance & Audits',
+] as const;
 
 export const MARKETING_SUB_ITEMS = [
   'Marketing Dashboard',
@@ -192,6 +205,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectFinanceSubItem,
   activeMarketingSubItem = 'Marketing Dashboard',
   onSelectMarketingSubItem,
+  activeBrandingSubItem = 'Brand Overview',
+  onSelectBrandingSubItem,
 }) => {
   return (
     <>
@@ -570,6 +585,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 isSubActive ? 'bg-pink-600 ring-2 ring-pink-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Branding when active */}
+                  {item.id === 'branding' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-rose-400 space-y-1">
+                      {BRANDING_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activeBrandingSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('branding');
+                              if (onSelectBrandingSubItem) {
+                                onSelectBrandingSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-rose-700 font-bold bg-rose-50/90'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-rose-600 ring-2 ring-rose-300' : 'bg-slate-300'
                               }`}
                             />
                             <span className="truncate">{sub}</span>

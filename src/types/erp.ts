@@ -1381,3 +1381,107 @@ export interface BrandSurveyNpsRecord {
   coverageRating: number;
   workabilityRating: number;
 }
+
+// -------------------------------------------------------------
+// BRANDING & CREATIVE STUDIO INTERFACES
+// -------------------------------------------------------------
+
+export interface BrandAssetRecord {
+  id: string;
+  assetCode: string;
+  title: string;
+  category: 'Logo & Icon' | 'Packaging Render' | 'Brochure & Catalog' | 'Social Creative' | 'Store Signage' | 'Typography & Guidelines';
+  fileType: 'PDF' | 'SVG' | 'PNG' | 'EPS' | 'AI' | 'ZIP';
+  fileSize: string;
+  version: string;
+  updatedDate: string;
+  tags: string[];
+  thumbnailUrl?: string;
+  previewColor?: string;
+  downloadsCount: number;
+  status: 'Approved' | 'Draft' | 'Archived';
+  description?: string;
+}
+
+export interface PackagingDesignRecord {
+  id: string;
+  skuCode: string;
+  productName: string;
+  category: 'Interior Emulsion' | 'Exterior Weatherguard' | 'Rustic Texture' | 'Waterproofing' | 'Wood & Enamel' | 'Primers & Putty';
+  tier: 'Ultra Luxury' | 'Premium' | 'Economy' | 'Industrial';
+  packSizes: string[];
+  finishType: 'Velvet Sheen' | 'Matte Luxury' | 'High Gloss' | 'Rough Granular' | 'Eggshell';
+  eanBarcode: string;
+  dieLineStatus: 'Print Ready' | 'Under Review' | 'Revision Pending';
+  accentColor: string;
+  bucketGradient: string;
+  designer: string;
+  lastRevision: string;
+  printSpecs: {
+    substrate: string;
+    colors: string;
+    finishing: string;
+  };
+  barcodeCompliant: boolean;
+  warrantyYears?: number;
+  tagline?: string;
+}
+
+export interface ShadeRecord {
+  id: string;
+  shadeCode: string;
+  shadeName: string;
+  family: 'Whites & Off-Whites' | 'Warm Tones' | 'Cool Blues' | 'Earthy Greens' | 'Royal Accents' | 'Textures & Metallics';
+  hexCode: string;
+  rgb: string;
+  cmyk: string;
+  lrv: number;
+  tintBase: 'Base White (W)' | 'Base Yellow (Y)' | 'Base Deep (D)' | 'Base Transparent (TR)';
+  formulationPerLiter: string;
+  popularityRank: number;
+  isTrending: boolean;
+  recommendedRoom: string;
+}
+
+export interface BrandCreativeRecord {
+  id: string;
+  creativeCode: string;
+  title: string;
+  purpose: 'Festival Greeting' | 'Monsoon Waterproofing' | 'Dealer Launch Post' | 'Painter Club Poster' | 'Product Feature Flyer' | 'Truck / Van Livery';
+  dimensions: string;
+  targetAudience: 'Dealers' | 'Homeowners' | 'Painters' | 'Architects';
+  customizable: boolean;
+  downloadCount: number;
+  accentTheme: string;
+  createdDate: string;
+  format: '1080x1080 (Square)' | '1920x1080 (Banner)' | 'A4 Print' | '10x4 ft Vinyl';
+  previewText?: string;
+}
+
+export interface SignageSpecRecord {
+  id: string;
+  signageType: 'Shopfront Glow Signboard' | '3D Acrylic LED Fascia' | 'In-Store Counter Arch' | 'Tinting Machine Vinyl Wrap' | 'Dealer Flange Board';
+  recommendedDimensions: string;
+  substrateMaterial: string;
+  lightingSpec: string;
+  estimatedFabricationCost: number;
+  brandCoOpSubsidy: number;
+  warrantyPeriod: string;
+  sampleApprovedVendors: string[];
+  status: 'Standard Spec' | 'Premium Tier Only' | 'New Release';
+}
+
+export interface BrandAuditRecord {
+  id: string;
+  auditCode: string;
+  dealerOrLocation: string;
+  city: string;
+  auditType: 'Storefront Signage' | 'Packaging Label Integrity' | 'Unauthorized Copycat Check' | 'Color Swatch Accuracy';
+  inspectionDate: string;
+  complianceScore: number;
+  status: 'Compliant' | 'Warning Issued' | 'Notice Served' | 'Resolved';
+  auditorName: string;
+  notes: string;
+  actionRequired?: string;
+}
+

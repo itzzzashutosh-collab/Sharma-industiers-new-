@@ -45,12 +45,13 @@ import { PurchaseScreen } from './components/screens/PurchaseScreen';
 import { DistributionScreen } from './components/screens/DistributionScreen';
 import { FinanceScreen } from './components/screens/FinanceScreen';
 import { MarketingScreen } from './components/screens/MarketingScreen';
+import { BrandingScreen } from './components/screens/BrandingScreen';
 import { ReportsScreen } from './components/screens/ReportsScreen';
 import { TeamScreen } from './components/screens/TeamScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenType>('marketing'); // Show user Marketing module as requested!
+  const [currentScreen, setCurrentScreen] = useState<ScreenType>('branding'); // Show user Branding module as requested!
   const [activeSalesSubItem, setActiveSalesSubItem] = useState('Order Management');
   const [activeCrmSubItem, setActiveCrmSubItem] = useState('Leads Management');
   const [activeQuotationsSubItem, setActiveQuotationsSubItem] = useState('All Quotations');
@@ -61,6 +62,7 @@ export default function App() {
   const [activeDistributionSubItem, setActiveDistributionSubItem] = useState('Distribution Dashboard');
   const [activeFinanceSubItem, setActiveFinanceSubItem] = useState('Financial Dashboard');
   const [activeMarketingSubItem, setActiveMarketingSubItem] = useState('Marketing Dashboard');
+  const [activeBrandingSubItem, setActiveBrandingSubItem] = useState('Brand Overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Core ERP State
