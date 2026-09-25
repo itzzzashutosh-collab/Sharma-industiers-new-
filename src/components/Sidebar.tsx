@@ -18,6 +18,14 @@ interface SidebarProps {
   onSelectInventorySubItem?: (subItem: string) => void;
   activeProductionSubItem?: string;
   onSelectProductionSubItem?: (subItem: string) => void;
+  activePurchaseSubItem?: string;
+  onSelectPurchaseSubItem?: (subItem: string) => void;
+  activeDistributionSubItem?: string;
+  onSelectDistributionSubItem?: (subItem: string) => void;
+  activeFinanceSubItem?: string;
+  onSelectFinanceSubItem?: (subItem: string) => void;
+  activeMarketingSubItem?: string;
+  onSelectMarketingSubItem?: (subItem: string) => void;
 }
 
 interface NavItem {
@@ -26,6 +34,55 @@ interface NavItem {
   icon: string;
   badge?: string;
 }
+
+export const MARKETING_SUB_ITEMS = [
+  'Marketing Dashboard',
+  'Campaigns & Promotions',
+  'Painter Loyalty (Ustaad Club)',
+  'Dealer Co-Op & Shop Branding',
+  'Outdoor & Highway Hoardings',
+  'Sample Kits & Merchandising',
+  'Architect & Contractor Meets',
+  'Digital Ads & Performance',
+  'Brand NPS & Market Research',
+] as const;
+
+export const FINANCE_SUB_ITEMS = [
+  'Financial Dashboard',
+  'Income & Expenses',
+  'Bank & Cash Management',
+  'Ledger (Accounts)',
+  'Accounts Receivable (AR)',
+  'Accounts Payable (AP)',
+  'GST & Tax Compliance',
+  'Profit & Loss Statement',
+  'Balance Sheet',
+  'Expense Management',
+  'Budgeting & Forecasting',
+  'Audit Trail',
+] as const;
+
+export const DISTRIBUTION_SUB_ITEMS = [
+  'Distribution Dashboard',
+  'Dispatch & Delivery Orders',
+  'Fleet & Vehicle Tracking',
+  'Depot & Warehouse Network',
+  'Route Planning & Logistics',
+  'Proof of Delivery (POD)',
+  'E-Way Bills & Permits',
+  'Transporter & Freight Ledger',
+] as const;
+
+export const PURCHASE_SUB_ITEMS = [
+  'Purchase Dashboard',
+  'Purchase Orders',
+  'Suppliers',
+  'Goods Receipt (GRN)',
+  'Purchase Returns',
+  'Purchase Invoices',
+  'Payments to Suppliers',
+  'Material Cost Tracking',
+] as const;
 
 export const PRODUCTION_SUB_ITEMS = [
   'Batch Schedule',
@@ -127,6 +184,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectInventorySubItem,
   activeProductionSubItem = 'Batch Schedule',
   onSelectProductionSubItem,
+  activePurchaseSubItem = 'Purchase Dashboard',
+  onSelectPurchaseSubItem,
+  activeDistributionSubItem = 'Distribution Dashboard',
+  onSelectDistributionSubItem,
+  activeFinanceSubItem = 'Financial Dashboard',
+  onSelectFinanceSubItem,
+  activeMarketingSubItem = 'Marketing Dashboard',
+  onSelectMarketingSubItem,
 }) => {
   return (
     <>
@@ -373,6 +438,138 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 isSubActive ? 'bg-amber-600 ring-2 ring-amber-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Purchase (Raw Materials) when active (Matching Screenshot) */}
+                  {item.id === 'purchase' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-blue-200 space-y-1">
+                      {PURCHASE_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activePurchaseSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('purchase');
+                              if (onSelectPurchaseSubItem) {
+                                onSelectPurchaseSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-blue-600 font-bold bg-blue-50/80'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-blue-600 ring-2 ring-blue-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Distribution & Supply Chain when active */}
+                  {item.id === 'distribution' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-blue-300 space-y-1">
+                      {DISTRIBUTION_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activeDistributionSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('distribution');
+                              if (onSelectDistributionSubItem) {
+                                onSelectDistributionSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-blue-700 font-bold bg-blue-50'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-blue-600 ring-2 ring-blue-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Finance & Accounts when active (Matching Screenshot) */}
+                  {item.id === 'finance' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-blue-400 space-y-1">
+                      {FINANCE_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activeFinanceSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('finance');
+                              if (onSelectFinanceSubItem) {
+                                onSelectFinanceSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-blue-700 font-bold bg-blue-50/90'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-blue-600 ring-2 ring-blue-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Marketing when active */}
+                  {item.id === 'marketing' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-pink-400 space-y-1">
+                      {MARKETING_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activeMarketingSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('marketing');
+                              if (onSelectMarketingSubItem) {
+                                onSelectMarketingSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-pink-700 font-bold bg-pink-50/90'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-pink-600 ring-2 ring-pink-300' : 'bg-slate-300'
                               }`}
                             />
                             <span className="truncate">{sub}</span>

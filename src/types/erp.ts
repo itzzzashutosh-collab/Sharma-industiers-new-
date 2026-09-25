@@ -169,17 +169,28 @@ export interface DebitNoteRecord {
 export interface EWayBillRecord {
   id: string;
   ewbNumber: string;
-  invoiceNumber: string;
-  customer: string;
-  fromCity: string;
-  toCity: string;
+  invoiceNumber?: string;
+  customer?: string;
+  fromCity?: string;
+  toCity?: string;
   vehicleNumber: string;
   transporterName: string;
-  transporterId: string;
+  transporterId?: string;
   distanceKm: number;
   validUntil: string;
-  status: 'Active' | 'Delivered' | 'Cancelled' | 'Expired';
-  generatedAt: string;
+  status: 'Active' | 'Delivered' | 'Delivered / Closed' | 'Cancelled' | 'Expired';
+  generatedAt?: string;
+  // Distribution transit permit fields:
+  doNumber?: string;
+  docDate?: string;
+  consignor?: string;
+  consignee?: string;
+  destinationCity?: string;
+  hsnCode?: string;
+  goodsDescription?: string;
+  taxableValue?: number;
+  igstCgstAmount?: number;
+  transporterGstin?: string;
 }
 
 export interface EInvoiceIRNRecord {
@@ -846,4 +857,527 @@ export interface PriceListRecord {
   status: 'Active' | 'Seasonal' | 'Draft';
   itemsCount: number;
   managedBy: string;
+}
+
+export interface PurchaseOrderItem {
+  id: string;
+  materialName: string;
+  specification: string;
+  qty: number;
+  unit: string;
+  rate: number;
+  amount: number;
+}
+
+export interface PurchaseTimelineStep {
+  step: string;
+  date: string;
+  detail: string;
+  completed: boolean;
+  isPending?: boolean;
+}
+
+export interface PurchaseOrderRecord {
+  id: string;
+  poNumber: string;
+  date: string;
+  expectedDate: string;
+  supplierId: string;
+  supplierName: string;
+  supplierContact: string;
+  supplierPhone: string;
+  supplierAddress: string;
+  supplierGstin?: string;
+  itemsCount: number;
+  totalQty: string;
+  totalQtyRaw: number;
+  totalAmount: string;
+  totalAmountRaw: number;
+  status: 'Received' | 'In Transit' | 'Partially Received' | 'Pending' | 'Cancelled';
+  paymentTerms: string;
+  createdBy: string;
+  department: string;
+  items: PurchaseOrderItem[];
+  timeline: PurchaseTimelineStep[];
+  grnNumbers?: string[];
+  invoiceNumber?: string;
+  paidAmount?: number;
+  pendingAmount?: number;
+  notes?: string;
+}
+
+export interface SupplierRecord {
+  id: string;
+  name: string;
+  shortCode: string;
+  category: string;
+  contactPerson: string;
+  phone: string;
+  email: string;
+  city: string;
+  address: string;
+  gstin: string;
+  rating: number;
+  paymentTerms: string;
+  outstandingBalance: number;
+  activeOrdersCount: number;
+  totalPurchases: number;
+  status: 'Active' | 'Preferred' | 'Under Review' | 'Inactive';
+}
+
+export interface GoodsReceiptRecord {
+  id: string;
+  grnNumber: string;
+  poNumber: string;
+  supplierName: string;
+  receivedDate: string;
+  vehicleNumber: string;
+  transporter: string;
+  challanNumber: string;
+  itemsReceived: Array<{
+    materialName: string;
+    orderedQty: number;
+    receivedQty: number;
+    rejectedQty: number;
+    unit: string;
+    qcStatus: 'Passed' | 'Quarantined';
+  }>;
+  weighbridgeNetWeightKg: number;
+  receiverName: string;
+  qcInspector: string;
+  status: 'Full Receipt' | 'Partial' | 'QC Inspection';
+}
+
+export interface PurchaseReturnRecord {
+  id: string;
+  returnNumber: string;
+  poNumber: string;
+  supplierName: string;
+  returnDate: string;
+  reason: string;
+  materialName: string;
+  returnQty: number;
+  unit: string;
+  debitNoteValue: number;
+  debitNoteNumber: string;
+  status: 'Dispatched' | 'Credit Note Acknowledged' | 'Pending Pickup';
+}
+
+export interface PurchaseInvoiceRecord {
+  id: string;
+  invoiceNumber: string;
+  poNumber: string;
+  supplierName: string;
+  invoiceDate: string;
+  dueDate: string;
+  taxableAmount: number;
+  gstAmount: number;
+  totalAmount: number;
+  matchingStatus: '3-Way Matched' | 'Price Variance' | 'Qty Discrepancy';
+  paymentStatus: 'Paid' | 'Partially Paid' | 'Pending';
+  paidAmount: number;
+  itcEligible: boolean;
+}
+
+export interface SupplierPaymentRecord {
+  id: string;
+  paymentNumber: string;
+  supplierName: string;
+  invoiceNumber: string;
+  paymentDate: string;
+  amount: number;
+  mode: 'RTGS' | 'NEFT' | 'Cheque' | 'Advance Adjustment';
+  utrRef: string;
+  bankAccount: string;
+  status: 'Cleared' | 'Initiated' | 'Scheduled';
+}
+
+export interface MaterialCostTrendRecord {
+  id: string;
+  materialName: string;
+  category: string;
+  currentRatePerKg: number;
+  previousMonthRate: number;
+  changePercent: number;
+  monthlyPurchasedKg: number;
+  totalMonthlySpend: number;
+  suppliersCount: number;
+  priceHistory: Array<{ month: string; rate: number }>;
+}
+
+export interface DispatchOrderRecord {
+  id: string;
+  doNumber: string;
+  date: string;
+  customer: string;
+  customerType: 'Dealer' | 'Painter' | 'Contractor' | 'Direct';
+  destination: string;
+  products: string;
+  bags: number;
+  vehicle: string;
+  driver: string;
+  driverPhone?: string;
+  expectedDate: string;
+  status: 'In Transit' | 'Delivered' | 'Delayed' | 'Pending' | 'Cancelled';
+  route?: string;
+  progressPercent?: number;
+  podSigned?: boolean;
+  ewayBillNumber?: string;
+}
+
+export interface FleetVehicleRecord {
+  id: string;
+  plateNumber: string;
+  model: string;
+  capacityTons: number;
+  assignedDriver: string;
+  driverPhone: string;
+  currentRoute: string;
+  origin: string;
+  destination: string;
+  status: 'In Transit' | 'Delivered' | 'Delayed' | 'Idle / Available' | 'Under Maintenance';
+  progressPercent: number;
+  fuelEfficiencyKmpl: number;
+  locationCity: string;
+  lastLocationUpdate: string;
+  fitnessValidTill: string;
+  insuranceValidTill: string;
+}
+
+export interface DepotRecord {
+  id: string;
+  name: string;
+  city: string;
+  address: string;
+  currentStockBags: number;
+  capacityBags: number;
+  skuCount: number;
+  depotManager: string;
+  phone: string;
+  isFactory?: boolean;
+  status: 'Operational' | 'High Capacity' | 'Transfer Pending';
+}
+
+export interface RoutePlanningRecord {
+  id: string;
+  routeCode: string;
+  routeName: string;
+  origin: string;
+  destination: string;
+  distanceKm: number;
+  estimatedHours: number;
+  tollPlazasCount: number;
+  avgFreightCost: number;
+  activeVehiclesCount: number;
+  waypoints: string[];
+}
+
+export interface PodRecord {
+  id: string;
+  podNumber: string;
+  doNumber: string;
+  customerName: string;
+  deliveredDate: string;
+  deliveredTime: string;
+  receivedBy: string;
+  receiverPhone: string;
+  bagsDelivered: number;
+  condition: 'Intact & Sealed' | 'Minor Outer Scuff' | 'Damaged';
+  hasDigitalSignature: boolean;
+  driverName: string;
+  status: 'Verified' | 'Pending Verification';
+}
+
+export interface TransporterLedgerRecord {
+  id: string;
+  transporterName: string;
+  contactPerson: string;
+  phone: string;
+  gstin: string;
+  vehicleCount: number;
+  panIndiaPermit: boolean;
+  standardRatePerKm: number;
+  totalTripsCompleted: number;
+  totalBilledAmount: number;
+  totalPaidAmount: number;
+  pendingBalance: number;
+  rating: number;
+  status: 'Active Transporter' | 'Under Review' | 'Blacklisted';
+}
+
+// -------------------------------------------------------------
+// FINANCE & ACCOUNTS SUBPAGE INTERFACES
+// -------------------------------------------------------------
+
+export interface FinanceTransaction {
+  id: string;
+  date: string;
+  type: 'Income' | 'Expense' | 'Transfer' | 'Adjustment';
+  particulars: string;
+  category: string;
+  reference: string;
+  amount: number;
+  status: 'Received' | 'Paid' | 'Partial' | 'Pending';
+  account?: string;
+  paymentMethod?: string;
+  notes?: string;
+  taxAmount?: number;
+  invoiceOrPoId?: string;
+}
+
+export interface BankCashAccountRecord {
+  id: string;
+  name: string;
+  accountType: 'Current Account' | 'Operating Account' | 'Cash in Hand' | 'Overdraft / CC Limit';
+  accountNumber?: string;
+  bankName: string;
+  balance: number;
+  currency: string;
+  lastSynced: string;
+  isBank: boolean;
+  status: 'Active' | 'Reconciled' | 'Attention Required';
+  syncStatus: 'Synced' | 'Pending Sync';
+  branchCode?: string;
+}
+
+export interface LedgerAccountRecord {
+  id: string;
+  code: string;
+  name: string;
+  group: 'Assets' | 'Liabilities' | 'Income' | 'Direct Expenses' | 'Indirect Expenses' | 'Equity';
+  openingBalance: number;
+  debitTotal: number;
+  creditTotal: number;
+  closingBalance: number;
+  normalBalance: 'Debit' | 'Credit';
+  description?: string;
+}
+
+export interface AccountsReceivableRecord {
+  id: string;
+  customerName: string;
+  customerTier: string;
+  invoiceNumber: string;
+  invoiceDate: string;
+  dueDate: string;
+  totalAmount: number;
+  receivedAmount: number;
+  outstandingAmount: number;
+  agingBucket: '0-30 Days' | '31-60 Days' | '61-90 Days' | '90+ Days';
+  overdueDays: number;
+  status: 'Current' | 'Overdue' | 'Partially Paid';
+  salesRep: string;
+  phone: string;
+}
+
+export interface AccountsPayableRecord {
+  id: string;
+  vendorName: string;
+  vendorCategory: string;
+  poNumber: string;
+  billNumber: string;
+  billDate: string;
+  dueDate: string;
+  totalAmount: number;
+  paidAmount: number;
+  outstandingAmount: number;
+  status: 'Due Soon' | 'Overdue' | 'Paid' | 'Hold';
+  overdueDays: number;
+  contactPerson: string;
+  phone: string;
+}
+
+export interface GstComplianceRecord {
+  id: string;
+  returnType: 'GSTR-1' | 'GSTR-3B' | 'GSTR-2B' | 'GSTR-9 (Annual)';
+  period: string;
+  dueDate: string;
+  taxableValue: number;
+  igst: number;
+  cgst: number;
+  sgst: number;
+  totalTax: number;
+  status: 'Filed & Verified' | 'Pending Filing' | 'Draft Ready' | 'Mismatch Detected';
+  filingDate?: string;
+  arnNumber?: string;
+  challanNumber?: string;
+}
+
+export interface ExpenseVoucherRecord {
+  id: string;
+  voucherNumber: string;
+  date: string;
+  category: string;
+  department: string;
+  amount: number;
+  paidTo: string;
+  paidThrough: string;
+  approvedBy: string;
+  description: string;
+  status: 'Approved' | 'Pending Approval' | 'Settled';
+  receiptAttached: boolean;
+}
+
+export interface BudgetForecastRecord {
+  id: string;
+  category: string;
+  department: string;
+  annualBudget: number;
+  monthBudget: number;
+  monthActual: number;
+  varianceAmount: number;
+  variancePercent: number;
+  status: 'Within Budget' | 'Warning' | 'Exceeded';
+  forecastNextMonth: number;
+}
+
+export interface AuditTrailRecord {
+  id: string;
+  timestamp: string;
+  user: string;
+  userRole: string;
+  module: string;
+  action: 'Create' | 'Update' | 'Delete' | 'Authorize' | 'Reconcile' | 'Export';
+  referenceRecord: string;
+  details: string;
+  ipAddress: string;
+}
+
+export interface MarketingCampaignRecord {
+  id: string;
+  campaignCode: string;
+  title: string;
+  category: 'Outdoor / BTL' | 'Digital & Social' | 'Painter Loyalty' | 'Dealer Co-Op' | 'Event / Meet' | 'Festive Launch';
+  budgetAllocated: number;
+  actualSpend: number;
+  startDate: string;
+  endDate: string;
+  status: 'Active' | 'Scheduled' | 'In Review' | 'Completed' | 'Paused';
+  channels: string[];
+  targetAudience: string;
+  targetRegion: string;
+  leadsGenerated: number;
+  ordersAttributed: number;
+  revenueGenerated: number;
+  roiPercentage: number;
+  managerName: string;
+  notes?: string;
+}
+
+export interface PainterLoyaltyMember {
+  id: string;
+  memberCode: string;
+  name: string;
+  phone: string;
+  city: string;
+  tier: 'Bronze' | 'Silver' | 'Gold' | 'Platinum Ustaad';
+  totalPointsEarned: number;
+  pointsBalance: number;
+  totalCouponsScanned: number;
+  lastScanDate: string;
+  upiId: string;
+  kycStatus: 'Verified' | 'Pending KYC' | 'Rejected';
+  lifetimeCashbackClaimed: number;
+  favoriteProduct: string;
+}
+
+export interface DealerBrandingRecord {
+  id: string;
+  requestNumber: string;
+  dealerName: string;
+  dealerCity: string;
+  dealerPhone: string;
+  brandingType: 'Shop Fascia Glow-Sign' | 'In-Shop Counter Display' | 'Tinting Machine Unit' | 'Wall Stencil Paint' | 'Canopy / Arch Gate';
+  boardDimensions: string;
+  totalCost: number;
+  dealerShare: number;
+  companySubsidy: number;
+  status: 'Installed & Verified' | 'Vendor Fabrication' | 'Approval Pending' | 'Under Inspection';
+  fabricatorVendor: string;
+  installationDate?: string;
+  inspectionPhotoUrl?: string;
+  verifiedBy?: string;
+}
+
+export interface OutdoorMediaRecord {
+  id: string;
+  siteCode: string;
+  locationName: string;
+  city: string;
+  corridor: string;
+  mediaType: 'Unipole Highway Hoarding' | 'Gantry Signboard' | 'Bus Shelter (BQS)' | 'Wall Wrap' | 'Toll Plaza Canopy';
+  size: string;
+  vendorName: string;
+  monthlyRent: number;
+  startDate: string;
+  expiryDate?: string;
+  endDate?: string;
+  daysLeft: number;
+  status: 'Active Display' | 'Renewal Due' | 'Expired' | 'Under Maintenance';
+  estMonthlyImpressions: string;
+  litType: 'Front-Lit LED' | 'Back-Lit' | 'Non-Lit';
+  campaignMessage: string;
+}
+
+export interface MerchandiseItemRecord {
+  id: string;
+  itemCode: string;
+  itemName: string;
+  category: 'Color Fandeck' | 'Shade Card' | 'Putty Sample Trial Pouch' | 'Painter Cap & T-Shirt' | 'Dealer Glow Clock' | 'Wall Apron';
+  unitCost: number;
+  currentStock: number;
+  allocatedThisMonth: number;
+  minimumBuffer: number;
+  unit: string;
+  status: 'In Stock' | 'Low Stock' | 'Reorder Placed';
+  storageRack: string;
+}
+
+export interface MarketingEventRecord {
+  id: string;
+  eventCode: string;
+  title: string;
+  eventType: 'Architect Conclave' | 'Contractor Meet' | 'Painter Training Workshop' | 'Dealer Annual Gala';
+  venue: string;
+  city: string;
+  eventDate: string;
+  expectedAttendees: number;
+  registeredAttendees: number;
+  totalBudget: number;
+  actualSpend: number;
+  organizerLead: string;
+  status: 'Upcoming' | 'Completed' | 'In Planning' | 'Cancelled';
+  newLeadsCaptured: number;
+  chiefGuest?: string;
+}
+
+export interface DigitalAdCampaignRecord {
+  id: string;
+  adName: string;
+  platform: 'Google Search Ads' | 'Meta (FB/Insta)' | 'YouTube Vernacular' | 'WhatsApp API' | 'IndiaMART / JustDial';
+  budgetDaily: number;
+  totalSpend: number;
+  impressions: number;
+  clicks: number;
+  ctr: number;
+  cpl: number;
+  leadsReceived: number;
+  conversionRate: number;
+  status: 'Running' | 'Paused' | 'Completed';
+  targetAudience: string;
+}
+
+export interface BrandSurveyNpsRecord {
+  id: string;
+  respondentType: 'Painter' | 'Dealer' | 'Contractor' | 'Homeowner';
+  respondentName: string;
+  city: string;
+  npsScore: number;
+  ratingCategory: 'Promoter' | 'Passive' | 'Detractor';
+  keyFeedback: string;
+  productRated: string;
+  date: string;
+  whitenessRating: number;
+  coverageRating: number;
+  workabilityRating: number;
 }

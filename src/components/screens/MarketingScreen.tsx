@@ -1,134 +1,360 @@
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  MarketingCampaignRecord,
+  PainterLoyaltyMember,
+  DealerBrandingRecord,
+  OutdoorMediaRecord,
+  MerchandiseItemRecord,
+  MarketingEventRecord,
+  DigitalAdCampaignRecord,
+  BrandSurveyNpsRecord,
+} from '../../types/erp';
+import {
+  INITIAL_CAMPAIGNS,
+  INITIAL_PAINTERS,
+  INITIAL_DEALER_BRANDINGS,
+  INITIAL_OUTDOOR_MEDIA,
+  INITIAL_MERCHANDISE,
+  INITIAL_EVENTS,
+  INITIAL_DIGITAL_ADS,
+  INITIAL_NPS_SURVEYS,
+} from '../../data/marketingData';
+
+import { MarketingDashboardSubpage } from './marketing/MarketingDashboardSubpage';
+import { CampaignsSubpage } from './marketing/CampaignsSubpage';
+import { PainterLoyaltySubpage } from './marketing/PainterLoyaltySubpage';
+import { DealerBrandingSubpage } from './marketing/DealerBrandingSubpage';
+import { OutdoorMediaSubpage } from './marketing/OutdoorMediaSubpage';
+import { MerchandiseInventorySubpage } from './marketing/MerchandiseInventorySubpage';
+import { MarketingEventsSubpage } from './marketing/MarketingEventsSubpage';
+import { DigitalPerformanceSubpage } from './marketing/DigitalPerformanceSubpage';
+import { BrandNpsSubpage } from './marketing/BrandNpsSubpage';
+
+import { NewCampaignModal } from './marketing/NewCampaignModal';
+import { PainterScanModal } from './marketing/PainterScanModal';
+import { NewBrandingRequestModal } from './marketing/NewBrandingRequestModal';
 import { ShowcaseCarousel } from '../ShowcaseCarousel';
 
 interface MarketingScreenProps {
+  activeSubPage?: string;
+  onSelectSubPage?: (subPage: string) => void;
   onInquireProduct?: (productTitle: string) => void;
 }
 
-export const MarketingScreen: React.FC<MarketingScreenProps> = ({ onInquireProduct }) => {
-  const campaigns = [
-    {
-      id: 'cmp-1',
-      title: 'Monsoon Exterior Weatherguard Campaign',
-      budget: '₹ 5.0 Lakhs',
-      status: 'Active · Launch Phase',
-      channels: 'Highway Hoardings, Painter WhatsApp, Dealer Signboards',
-      roi: '↑ 24% Inquiry Growth',
-    },
-    {
-      id: 'cmp-2',
-      title: 'Swatch Ustaad Painter Loyalty App',
-      budget: '₹ 2.5 Lakhs',
-      status: 'Enrolling Painters',
-      channels: 'QR Codes inside Bag Liners · Instant UPI Payout',
-      roi: '450 Painters Enrolled',
-    },
-    {
-      id: 'cmp-3',
-      title: 'Diwali Festive Interior Launch',
-      budget: '₹ 8.0 Lakhs',
-      status: 'Scheduled (Sept 2025)',
-      channels: 'Regional TV, YouTube Ads, Dealer Co-op Branding',
-      roi: 'Target: ₹ 1.2 Cr Sales',
-    },
-  ];
+const TABS = [
+  { id: 'Marketing Dashboard', label: 'Marketing Dashboard', icon: 'fa-solid fa-chart-pie' },
+  { id: 'Campaigns & Promotions', label: 'Campaigns & Promotions', icon: 'fa-solid fa-bullhorn' },
+  { id: 'Painter Loyalty (Ustaad Club)', label: 'Painter Loyalty (Ustaad)', icon: 'fa-solid fa-paintbrush' },
+  { id: 'Dealer Co-Op & Shop Branding', label: 'Dealer Co-Op Branding', icon: 'fa-solid fa-store' },
+  { id: 'Outdoor & Highway Hoardings', label: 'Outdoor & Hoardings', icon: 'fa-solid fa-signs-post' },
+  { id: 'Sample Kits & Merchandising', label: 'Sample Kits & Collateral', icon: 'fa-solid fa-boxes-packing' },
+  { id: 'Architect & Contractor Meets', label: 'Architect & Contractor Meets', icon: 'fa-solid fa-champagne-glasses' },
+  { id: 'Digital Ads & Performance', label: 'Digital Ads & Growth', icon: 'fa-solid fa-chart-line' },
+  { id: 'Brand NPS & Market Research', label: 'Brand NPS & Feedback', icon: 'fa-solid fa-heart' },
+];
 
-  const colorSwatches = [
-    { name: 'Jaipur Terracotta', code: '#E25822', category: 'Rustic Royale' },
-    { name: 'Royal Jodhpur Blue', code: '#2563EB', category: 'Shine Emulsion' },
-    { name: 'Marwar Desert Ochre', code: '#F59E0B', category: 'Distemper' },
-    { name: 'Aravalli Forest Green', code: '#10B981', category: 'Weatherguard' },
-    { name: 'Udaipur Pearl White', code: '#F8FAFC', category: 'Base Prime' },
-  ];
+export const MarketingScreen: React.FC<MarketingScreenProps> = ({
+  activeSubPage,
+  onSelectSubPage,
+  onInquireProduct,
+}) => {
+  const [internalSubPage, setInternalSubPage] = useState('Marketing Dashboard');
+  const currentSubPage = activeSubPage || internalSubPage;
+
+  const handleSubPageChange = (tabId: string) => {
+    setInternalSubPage(tabId);
+    onSelectSubPage?.(tabId);
+  };
+
+  // Marketing State
+  const [campaigns, setCampaigns] = useState<MarketingCampaignRecord[]>(INITIAL_CAMPAIGNS);
+  const [painters, setPainters] = useState<PainterLoyaltyMember[]>(INITIAL_PAINTERS);
+  const [dealerBrandings, setDealerBrandings] = useState<DealerBrandingRecord[]>(INITIAL_DEALER_BRANDINGS);
+  const [outdoorMedia, setOutdoorMedia] = useState<OutdoorMediaRecord[]>(INITIAL_OUTDOOR_MEDIA);
+  const [merchandise, setMerchandise] = useState<MerchandiseItemRecord[]>(INITIAL_MERCHANDISE);
+  const [events, setEvents] = useState<MarketingEventRecord[]>(INITIAL_EVENTS);
+  const [digitalAds, setDigitalAds] = useState<DigitalAdCampaignRecord[]>(INITIAL_DIGITAL_ADS);
+  const [npsSurveys, setNpsSurveys] = useState<BrandSurveyNpsRecord[]>(INITIAL_NPS_SURVEYS);
+
+  // Modals state
+  const [isNewCampaignOpen, setIsNewCampaignOpen] = useState(false);
+  const [isPainterScanOpen, setIsPainterScanOpen] = useState(false);
+  const [isNewBrandingOpen, setIsNewBrandingOpen] = useState(false);
+
+  // Handlers
+  const handleAddCampaign = (newCamp: MarketingCampaignRecord) => {
+    setCampaigns([newCamp, ...campaigns]);
+  };
+
+  const handleUpdateCampaignStatus = (id: string, newStatus: MarketingCampaignRecord['status']) => {
+    setCampaigns(campaigns.map((c) => (c.id === id ? { ...c, status: newStatus } : c)));
+  };
+
+  const handlePainterScanSuccess = (painterId: string, pointsEarned: number, cashbackAmount: number) => {
+    setPainters((prev) =>
+      prev.map((p) => {
+        if (p.id === painterId) {
+          return {
+            ...p,
+            totalPointsEarned: p.totalPointsEarned + pointsEarned,
+            pointsBalance: p.pointsBalance + pointsEarned,
+            totalCouponsScanned: p.totalCouponsScanned + 1,
+            lifetimeCashbackClaimed: p.lifetimeCashbackClaimed + cashbackAmount,
+            lastScanDate: '12 Aug 2025',
+          };
+        }
+        return p;
+      })
+    );
+  };
+
+  const handleQuickPayout = (painterId: string, amount: number) => {
+    setPainters((prev) =>
+      prev.map((p) => {
+        if (p.id === painterId) {
+          const pointsDeducted = Math.min(p.pointsBalance, Math.round(amount * 1.5));
+          return {
+            ...p,
+            pointsBalance: Math.max(0, p.pointsBalance - pointsDeducted),
+            lifetimeCashbackClaimed: p.lifetimeCashbackClaimed + amount,
+          };
+        }
+        return p;
+      })
+    );
+  };
+
+  const handleAddBranding = (newRecord: DealerBrandingRecord) => {
+    setDealerBrandings([newRecord, ...dealerBrandings]);
+  };
+
+  const handleUpdateBrandingStatus = (id: string, newStatus: DealerBrandingRecord['status']) => {
+    setDealerBrandings(
+      dealerBrandings.map((b) =>
+        b.id === id ? { ...b, status: newStatus, verifiedBy: 'Vikramaditya Rathore' } : b
+      )
+    );
+  };
+
+  const handleRenewOutdoorSite = (id: string) => {
+    setOutdoorMedia(
+      outdoorMedia.map((s) =>
+        s.id === id
+          ? {
+              ...s,
+              status: 'Active Display',
+              daysLeft: 180,
+              endDate: '28 Feb 2026',
+            }
+          : s
+      )
+    );
+  };
+
+  const handleAllocateStock = (itemId: string, qty: number, _recipient: string) => {
+    setMerchandise(
+      merchandise.map((m) =>
+        m.id === itemId
+          ? {
+              ...m,
+              currentStock: Math.max(0, m.currentStock - qty),
+              allocatedThisMonth: m.allocatedThisMonth + qty,
+              status: m.currentStock - qty <= m.minimumBuffer ? 'Low Stock' : 'In Stock',
+            }
+          : m
+      )
+    );
+  };
+
+  const handleAddEvent = (newEvent: MarketingEventRecord) => {
+    setEvents([newEvent, ...events]);
+  };
+
+  const handleToggleDigitalAd = (id: string) => {
+    setDigitalAds(
+      digitalAds.map((ad) =>
+        ad.id === id
+          ? { ...ad, status: ad.status === 'Running' ? 'Paused' : 'Running' }
+          : ad
+      )
+    );
+  };
+
+  const handleAddNpsSurvey = (newSurvey: BrandSurveyNpsRecord) => {
+    setNpsSurveys([newSurvey, ...npsSurveys]);
+  };
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Screen Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-lg bg-pink-50 text-pink-600 flex items-center justify-center text-sm font-bold">
+          <div className="flex items-center gap-2.5">
+            <span className="w-9 h-9 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center text-base font-bold shadow-2xs">
               <i className="fa-solid fa-bullhorn" />
             </span>
-            <h2 className="text-lg font-black text-slate-900">
-              Marketing, Branding &amp; Social Reach
-            </h2>
+            <div>
+              <h2 className="text-lg font-black text-slate-900 leading-tight">
+                Marketing, Branding &amp; Growth
+              </h2>
+              <p className="text-xs text-slate-500">
+                Swatch Paints &amp; Polymer Putty · Hadoti &amp; Rajasthan Regional Brand Management
+              </p>
+            </div>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
-            Brand constitution: &ldquo;Better Walls, Brighter Lives&rdquo; · Painter loyalty programs &amp; dealer promotion.
-          </p>
         </div>
 
-        <button className="px-4 py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-xs transition flex items-center gap-1.5">
-          <i className="fa-solid fa-plus text-[10px]" />
-          <span>Launch Campaign</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => setIsPainterScanOpen(true)}
+            className="px-3.5 py-2 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition flex items-center gap-1.5 shadow-2xs"
+          >
+            <i className="fa-solid fa-qrcode text-[11px]" />
+            <span>Scan QR Coupon</span>
+          </button>
+
+          <button
+            onClick={() => setIsNewCampaignOpen(true)}
+            className="px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 rounded-xl shadow-xs transition flex items-center gap-1.5"
+          >
+            <i className="fa-solid fa-plus text-[10px]" />
+            <span>Launch Campaign</span>
+          </button>
+        </div>
       </div>
 
-      {/* Campaigns Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {campaigns.map((cmp) => (
-          <div
-            key={cmp.id}
-            className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3"
-          >
-            <div className="flex items-start justify-between">
-              <h3 className="text-sm font-bold text-slate-900">{cmp.title}</h3>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">
-                {cmp.status}
-              </span>
-            </div>
+      {/* Horizontal Subpages Navigation Tabs */}
+      <div className="bg-white p-1.5 rounded-2xl border border-slate-200/80 shadow-xs overflow-x-auto">
+        <div className="flex items-center space-x-1 min-w-max">
+          {TABS.map((tab) => {
+            const isActive = currentSubPage === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleSubPageChange(tab.id)}
+                className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                  isActive
+                    ? 'bg-pink-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/70'
+                }`}
+              >
+                <i className={`${tab.icon} text-[11px]`} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-            <div className="p-3 bg-slate-50 rounded-xl space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Approved Budget:</span>
-                <span className="font-bold text-slate-900">{cmp.budget}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Impact / ROI:</span>
-                <span className="font-bold text-emerald-600">{cmp.roi}</span>
-              </div>
-              <p className="text-slate-500 pt-1 text-[11px]">{cmp.channels}</p>
+      {/* Active Subpage Rendering */}
+      <div>
+        {currentSubPage === 'Marketing Dashboard' && (
+          <div className="space-y-6">
+            <MarketingDashboardSubpage
+              campaigns={campaigns}
+              painters={painters}
+              dealerBrandings={dealerBrandings}
+              outdoorMedia={outdoorMedia}
+              digitalAds={digitalAds}
+              npsSurveys={npsSurveys}
+              onNavigateTab={handleSubPageChange}
+              onOpenNewCampaign={() => setIsNewCampaignOpen(true)}
+              onOpenPainterScan={() => setIsPainterScanOpen(true)}
+              onOpenNewBranding={() => setIsNewBrandingOpen(true)}
+            />
+
+            {/* Showcase Carousel */}
+            <div className="pt-2">
+              <ShowcaseCarousel
+                onSelectSlideAction={(slide) => {
+                  if (onInquireProduct) {
+                    onInquireProduct(slide.title);
+                  }
+                }}
+              />
             </div>
           </div>
-        ))}
+        )}
+
+        {currentSubPage === 'Campaigns & Promotions' && (
+          <CampaignsSubpage
+            campaigns={campaigns}
+            onOpenNewCampaign={() => setIsNewCampaignOpen(true)}
+            onUpdateCampaignStatus={handleUpdateCampaignStatus}
+          />
+        )}
+
+        {currentSubPage === 'Painter Loyalty (Ustaad Club)' && (
+          <PainterLoyaltySubpage
+            painters={painters}
+            onOpenPainterScan={() => setIsPainterScanOpen(true)}
+            onQuickPayout={handleQuickPayout}
+          />
+        )}
+
+        {currentSubPage === 'Dealer Co-Op & Shop Branding' && (
+          <DealerBrandingSubpage
+            brandings={dealerBrandings}
+            onOpenNewBranding={() => setIsNewBrandingOpen(true)}
+            onUpdateStatus={handleUpdateBrandingStatus}
+          />
+        )}
+
+        {currentSubPage === 'Outdoor & Highway Hoardings' && (
+          <OutdoorMediaSubpage
+            sites={outdoorMedia}
+            onRenewSite={handleRenewOutdoorSite}
+          />
+        )}
+
+        {currentSubPage === 'Sample Kits & Merchandising' && (
+          <MerchandiseInventorySubpage
+            items={merchandise}
+            onAllocateStock={handleAllocateStock}
+          />
+        )}
+
+        {currentSubPage === 'Architect & Contractor Meets' && (
+          <MarketingEventsSubpage
+            events={events}
+            onAddEvent={handleAddEvent}
+          />
+        )}
+
+        {currentSubPage === 'Digital Ads & Performance' && (
+          <DigitalPerformanceSubpage
+            ads={digitalAds}
+            onToggleAdStatus={handleToggleDigitalAd}
+          />
+        )}
+
+        {currentSubPage === 'Brand NPS & Market Research' && (
+          <BrandNpsSubpage
+            surveys={npsSurveys}
+            onAddSurvey={handleAddNpsSurvey}
+          />
+        )}
       </div>
 
-      {/* Interactive Visual Showcase Carousel */}
-      <ShowcaseCarousel
-        onSelectSlideAction={(slide) => {
-          if (onInquireProduct) {
-            onInquireProduct(slide.title);
-          }
-        }}
+      {/* Global Modals */}
+      <NewCampaignModal
+        isOpen={isNewCampaignOpen}
+        onClose={() => setIsNewCampaignOpen(false)}
+        onAddCampaign={handleAddCampaign}
       />
 
-      {/* Brand Color Palettes */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-        <div>
-          <h3 className="text-sm font-bold text-slate-900">Official Brand Color Swatches</h3>
-          <p className="text-xs text-slate-500">
-            Heritage pigments formulated and packaged at Swatch Paints Factory #01 (Jaipur)
-          </p>
-        </div>
+      <PainterScanModal
+        isOpen={isPainterScanOpen}
+        onClose={() => setIsPainterScanOpen(false)}
+        painters={painters}
+        onScanSuccess={handlePainterScanSuccess}
+      />
 
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
-          {colorSwatches.map((swatch, i) => (
-            <div key={i} className="p-3 rounded-xl border border-slate-200 text-center space-y-2">
-              <div
-                className="w-full h-16 rounded-lg shadow-inner border border-slate-200/50"
-                style={{ backgroundColor: swatch.code }}
-              />
-              <div>
-                <h4 className="text-xs font-bold text-slate-900">{swatch.name}</h4>
-                <p className="text-[10px] text-slate-400 font-mono mt-0.5">{swatch.code}</p>
-                <span className="text-[9px] font-semibold text-slate-500 block mt-1">
-                  {swatch.category}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <NewBrandingRequestModal
+        isOpen={isNewBrandingOpen}
+        onClose={() => setIsNewBrandingOpen(false)}
+        onAddBranding={handleAddBranding}
+      />
     </div>
   );
 };

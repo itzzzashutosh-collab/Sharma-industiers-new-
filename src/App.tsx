@@ -50,13 +50,17 @@ import { TeamScreen } from './components/screens/TeamScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenType>('production'); // Set default to Production (Factory) as requested!
+  const [currentScreen, setCurrentScreen] = useState<ScreenType>('marketing'); // Show user Marketing module as requested!
   const [activeSalesSubItem, setActiveSalesSubItem] = useState('Order Management');
   const [activeCrmSubItem, setActiveCrmSubItem] = useState('Leads Management');
   const [activeQuotationsSubItem, setActiveQuotationsSubItem] = useState('All Quotations');
   const [activeInvoicesSubItem, setActiveInvoicesSubItem] = useState('All Invoices');
   const [activeInventorySubItem, setActiveInventorySubItem] = useState('Product Catalog');
   const [activeProductionSubItem, setActiveProductionSubItem] = useState('Batch Schedule');
+  const [activePurchaseSubItem, setActivePurchaseSubItem] = useState('Purchase Dashboard');
+  const [activeDistributionSubItem, setActiveDistributionSubItem] = useState('Distribution Dashboard');
+  const [activeFinanceSubItem, setActiveFinanceSubItem] = useState('Financial Dashboard');
+  const [activeMarketingSubItem, setActiveMarketingSubItem] = useState('Marketing Dashboard');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Core ERP State
@@ -237,6 +241,14 @@ export default function App() {
         onSelectInventorySubItem={setActiveInventorySubItem}
         activeProductionSubItem={activeProductionSubItem}
         onSelectProductionSubItem={setActiveProductionSubItem}
+        activePurchaseSubItem={activePurchaseSubItem}
+        onSelectPurchaseSubItem={setActivePurchaseSubItem}
+        activeDistributionSubItem={activeDistributionSubItem}
+        onSelectDistributionSubItem={setActiveDistributionSubItem}
+        activeFinanceSubItem={activeFinanceSubItem}
+        onSelectFinanceSubItem={setActiveFinanceSubItem}
+        activeMarketingSubItem={activeMarketingSubItem}
+        onSelectMarketingSubItem={setActiveMarketingSubItem}
       />
 
       {/* Main Content Area */}
@@ -343,16 +355,40 @@ export default function App() {
             />
           )}
 
-          {currentScreen === 'purchase' && <PurchaseScreen />}
+          {currentScreen === 'purchase' && (
+            <PurchaseScreen
+              activeSubPage={activePurchaseSubItem}
+              onSelectSubPage={setActivePurchaseSubItem}
+              onNavigateToScreen={(s) => setCurrentScreen(s as ScreenType)}
+            />
+          )}
 
-          {currentScreen === 'distribution' && <DistributionScreen />}
+          {currentScreen === 'distribution' && (
+            <DistributionScreen
+              activeSubPage={activeDistributionSubItem}
+              onSelectSubPage={setActiveDistributionSubItem}
+            />
+          )}
 
-          {currentScreen === 'finance' && <FinanceScreen />}
+          {currentScreen === 'finance' && (
+            <FinanceScreen
+              activeSubPage={activeFinanceSubItem}
+              onSelectSubPage={setActiveFinanceSubItem}
+            />
+          )}
 
           {(currentScreen === 'marketing' ||
             currentScreen === 'branding' ||
             currentScreen === 'social') && (
             <MarketingScreen
+              activeSubPage={
+                currentScreen === 'branding'
+                  ? 'Dealer Co-Op & Shop Branding'
+                  : currentScreen === 'social'
+                  ? 'Digital Ads & Performance'
+                  : activeMarketingSubItem
+              }
+              onSelectSubPage={setActiveMarketingSubItem}
               onInquireProduct={(prod) => {
                 setContactProductInterest(prod);
                 setIsContactOpen(true);
