@@ -337,6 +337,176 @@ export interface ProductionBatch {
   startTime: string;
   defectCount: number;
   qualityPassRate: number;
+  stage?: 'Premixing & Charging' | 'High-Shear Grinding' | 'Thinning & Tinting' | 'QC Testing' | 'Automated Packaging' | 'Palletized';
+  progressPercent?: number;
+  priority?: 'High' | 'Normal' | 'Urgent';
+  targetDate?: string;
+  tankId?: string;
+  recipeCode?: string;
+  density?: string;
+  viscosity?: string;
+  notes?: string;
+}
+
+export interface ProductionBOMIngredient {
+  id: string;
+  rawMaterialName: string;
+  category: 'Pigment' | 'Polymer Binder' | 'Extender / Filler' | 'Additive' | 'Solvent / Water';
+  percentage: number;
+  quantityPer1000Kg: number;
+  unit: string;
+  phase: 'Phase 1 - Mill Base Dispersion' | 'Phase 2 - High-Speed Grinding' | 'Phase 3 - Let-Down / Thinning' | 'Phase 4 - Tinting & Adjustments';
+  feedOrder: number;
+  tolerancePercent: number;
+}
+
+export interface ProductionBOMRecipe {
+  id: string;
+  recipeCode: string;
+  productName: string;
+  category: 'Interior Emulsion' | 'Exterior Weatherproof' | 'Wall Primer' | 'Texture / Distemper' | 'Enamel & Gloss';
+  standardBatchSizeKg: number;
+  theoreticalYieldKg: number;
+  grindFinenessTarget: string; // e.g. "< 35 microns (Hegman 6.5)"
+  viscosityTarget: string; // e.g. "105 - 110 KU"
+  phTarget: string; // e.g. "8.5 - 9.0"
+  densityTarget: string; // e.g. "1.38 ± 0.03 g/ml"
+  cycleTimeHours: number;
+  approvedBy: string;
+  revision: string;
+  ingredients: ProductionBOMIngredient[];
+  mixingInstructions: string[];
+}
+
+export interface QualityTestRecord {
+  id: string;
+  sampleCode: string;
+  batchNumber: string;
+  productName: string;
+  sampleTime: string;
+  testedBy: string;
+  labLocation: string;
+  viscosityKU: number;
+  viscosityTarget: string;
+  specificGravity: number;
+  sgTarget: string;
+  gloss60Deg: number;
+  glossTarget: string;
+  finenessMicrons: number;
+  finenessTarget: string;
+  wetOpacityPercent: number;
+  opacityTarget: string;
+  phValue: number;
+  phTarget: string;
+  deltaEColor: number;
+  deltaETarget: string;
+  dryingTimeMin: number;
+  dryingTarget: string;
+  result: 'Passed' | 'Failed' | 'Quarantined' | 'Re-tinting Required';
+  coaNumber: string;
+  remarks: string;
+  isCoaGenerated?: boolean;
+}
+
+export interface MachineryLine {
+  id: string;
+  machineCode: string;
+  name: string;
+  unitType: 'Dispersion Tank' | 'Bead Mill' | 'Thinning Vat' | 'Automated Filling Line' | 'Color Tint Dispenser';
+  location: string;
+  status: 'Running' | 'Idle' | 'Maintenance' | 'Breakdown';
+  currentBatch?: string;
+  operator: string;
+  oeePercent: number;
+  availabilityPercent: number;
+  performancePercent: number;
+  qualityPercent: number;
+  motorRpm?: number;
+  temperatureC?: number;
+  powerConsumptionKw?: number;
+  totalRunHours: number;
+  lastServicedDate: string;
+  nextServiceDueDate: string;
+}
+
+export interface MaterialRequisitionSlip {
+  id: string;
+  requisitionNo: string;
+  batchNumber: string;
+  requestedBy: string;
+  shift: 'Morning Shift' | 'Evening Shift' | 'Night Shift';
+  date: string;
+  status: 'Fulfilled' | 'Partially Issued' | 'Pending Store Release';
+  department: string;
+  items: Array<{
+    id: string;
+    rawMaterialName: string;
+    category: string;
+    requiredQtyKg: number;
+    issuedQtyKg: number;
+    unit: string;
+    warehouseBin: string;
+    lotNumber: string;
+    variancePercent: number;
+  }>;
+}
+
+export interface PackagingFillingRun {
+  id: string;
+  runNumber: string;
+  batchNumber: string;
+  productName: string;
+  packSize: '20kg Bag' | '20L Bucket' | '10L Bucket' | '4L Can' | '1L Pack';
+  packagingLine: string;
+  operator: string;
+  shift: string;
+  targetCount: number;
+  packedCount: number;
+  rejectedCount: number;
+  fillSpeedBagsPerMin: number;
+  weightCheckAvgKg: number;
+  leakTestPassRatePercent: number;
+  inkjetBatchCodePrinted: boolean;
+  status: 'Active Running' | 'Completed' | 'Batch Changeover' | 'Paused';
+}
+
+export interface YieldWastageRecord {
+  id: string;
+  batchNumber: string;
+  productName: string;
+  date: string;
+  theoreticalYieldKg: number;
+  actualYieldKg: number;
+  yieldPercent: number;
+  totalLossKg: number;
+  lossesBreakdown: {
+    kettleResidueKg: number;
+    filterBagSludgeKg: number;
+    fillingSpillKg: number;
+    labSampleDeductionKg: number;
+  };
+  washWaterVolumeLiters: number;
+  recycledToSlurryLiters: number;
+  etpTransferLiters: number;
+  status: 'Within Tolerances' | 'High Loss Audit' | 'Optimal Efficiency';
+}
+
+export interface MaintenanceDowntimeLog {
+  id: string;
+  logNumber: string;
+  machineCode: string;
+  machineName: string;
+  category: 'Unplanned Breakdown' | 'Preventive Servicing' | 'Screen / Filter Clog' | 'Color Wash & Flush' | 'Sensor Calibration';
+  severity: 'Critical' | 'Medium' | 'Low';
+  startTime: string;
+  endTime?: string;
+  durationMinutes: number;
+  reportedBy: string;
+  assignedTechnician: string;
+  rootCause: string;
+  actionTaken: string;
+  replacedParts?: string[];
+  status: 'Resolved' | 'In Progress' | 'Awaiting Spares';
 }
 
 export interface RawMaterial {

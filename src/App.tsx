@@ -24,6 +24,7 @@ import {
   INITIAL_ACTIVITIES,
 } from './data/mockData';
 import { INITIAL_EXTENDED_INVOICES } from './data/invoicesData';
+import { INITIAL_EXTENDED_BATCHES } from './data/productionData';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { SearchModal } from './components/SearchModal';
@@ -49,12 +50,13 @@ import { TeamScreen } from './components/screens/TeamScreen';
 import { SettingsScreen } from './components/screens/SettingsScreen';
 
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState<ScreenType>('inventory'); // Set default to Products & Inventory as requested!
+  const [currentScreen, setCurrentScreen] = useState<ScreenType>('production'); // Set default to Production (Factory) as requested!
   const [activeSalesSubItem, setActiveSalesSubItem] = useState('Order Management');
   const [activeCrmSubItem, setActiveCrmSubItem] = useState('Leads Management');
   const [activeQuotationsSubItem, setActiveQuotationsSubItem] = useState('All Quotations');
   const [activeInvoicesSubItem, setActiveInvoicesSubItem] = useState('All Invoices');
   const [activeInventorySubItem, setActiveInventorySubItem] = useState('Product Catalog');
+  const [activeProductionSubItem, setActiveProductionSubItem] = useState('Batch Schedule');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Core ERP State
@@ -62,7 +64,7 @@ export default function App() {
   const [invoices, setInvoices] = useState<Invoice[]>(INITIAL_EXTENDED_INVOICES);
   const [products, setProducts] = useState<ProductItem[]>(TOP_PRODUCTS);
   const [leads, setLeads] = useState<Lead[]>(INITIAL_LEADS);
-  const [batches, setBatches] = useState<ProductionBatch[]>(INITIAL_BATCHES);
+  const [batches, setBatches] = useState<ProductionBatch[]>(INITIAL_EXTENDED_BATCHES);
   const [alerts, setAlerts] = useState<SystemAlert[]>(INITIAL_ALERTS);
   const [activities, setActivities] = useState<ActivityItem[]>(INITIAL_ACTIVITIES);
 
@@ -233,6 +235,8 @@ export default function App() {
         onSelectInvoicesSubItem={setActiveInvoicesSubItem}
         activeInventorySubItem={activeInventorySubItem}
         onSelectInventorySubItem={setActiveInventorySubItem}
+        activeProductionSubItem={activeProductionSubItem}
+        onSelectProductionSubItem={setActiveProductionSubItem}
       />
 
       {/* Main Content Area */}
@@ -333,6 +337,9 @@ export default function App() {
               batches={batches}
               onAddBatch={handleAddBatch}
               onUpdateBatchStatus={handleUpdateBatchStatus}
+              activeSubPage={activeProductionSubItem}
+              onSelectSubPage={setActiveProductionSubItem}
+              onNavigateToScreen={(s) => setCurrentScreen(s as ScreenType)}
             />
           )}
 

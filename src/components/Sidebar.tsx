@@ -16,6 +16,8 @@ interface SidebarProps {
   onSelectInvoicesSubItem?: (subItem: string) => void;
   activeInventorySubItem?: string;
   onSelectInventorySubItem?: (subItem: string) => void;
+  activeProductionSubItem?: string;
+  onSelectProductionSubItem?: (subItem: string) => void;
 }
 
 interface NavItem {
@@ -24,6 +26,17 @@ interface NavItem {
   icon: string;
   badge?: string;
 }
+
+export const PRODUCTION_SUB_ITEMS = [
+  'Batch Schedule',
+  'Batch Formulation (BOM)',
+  'Quality Control (QC Lab)',
+  'Plant Machinery & OEE',
+  'Material Consumption',
+  'Packaging & Filling',
+  'Yield & Wastage',
+  'Maintenance & Downtime',
+] as const;
 
 export const INVENTORY_SUB_ITEMS = [
   'Product Catalog',
@@ -112,6 +125,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectInvoicesSubItem,
   activeInventorySubItem = 'Product Catalog',
   onSelectInventorySubItem,
+  activeProductionSubItem = 'Batch Schedule',
+  onSelectProductionSubItem,
 }) => {
   return (
     <>
@@ -325,6 +340,39 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 isSubActive ? 'bg-blue-600 ring-2 ring-blue-300' : 'bg-slate-300'
+                              }`}
+                            />
+                            <span className="truncate">{sub}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Expandable sub-tree for Production (Factory) when active */}
+                  {item.id === 'production' && isActive && (
+                    <div className="relative pl-6 py-1 my-1 ml-3 border-l-2 border-amber-200 space-y-1">
+                      {PRODUCTION_SUB_ITEMS.map((sub) => {
+                        const isSubActive = activeProductionSubItem === sub;
+                        return (
+                          <button
+                            key={sub}
+                            onClick={() => {
+                              onSelectScreen('production');
+                              if (onSelectProductionSubItem) {
+                                onSelectProductionSubItem(sub);
+                              }
+                              onCloseMobile();
+                            }}
+                            className={`w-full flex items-center space-x-2.5 py-1 px-2 text-[11px] rounded-lg text-left transition ${
+                              isSubActive
+                                ? 'text-amber-700 font-bold bg-amber-50/80'
+                                : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
+                            }`}
+                          >
+                            <span
+                              className={`w-1.5 h-1.5 rounded-full ${
+                                isSubActive ? 'bg-amber-600 ring-2 ring-amber-300' : 'bg-slate-300'
                               }`}
                             />
                             <span className="truncate">{sub}</span>
